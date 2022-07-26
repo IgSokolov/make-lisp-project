@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-make_executable=0
-make_library=0
+make_executable=false
+make_library=false
 
 function print_help()
 {
@@ -16,7 +16,7 @@ while getopts ":hbln::" opt; do
 	h) print_help
 	   exit 1
 	   ;;
-	b) make_executable=1
+	b) make_executable=true
 	   ;;
 	l) make_library=1
 	   ;;
@@ -49,7 +49,10 @@ echo "## Introduction
 ## Contribution
 ## References" > README.md
 
-function depend_on_package_file()
+
+######## #create project_name.asd ###########
+
+function dependencies_on_package_file()
 {
     local list=""
     local tab=$"\n\t\t\b"
@@ -72,16 +75,28 @@ function dependencies_for_api()
     echo $list
 }
 
-dep1=$(depend_on_package_file "${project_files[@]}")
-dep2=$(dependencies_for_api "${project_files[@]}")
+function make_asdf_appendix_for_executable()
+{
+    newline="\n\t\b\b\b\b\b\b"
+    if $1; then
+	echo "$newline:build-operation \"program-op\"
+$newline:build-pathname \"$project_name\"
+$newline:entry-point \"$project_name.main:run\")"
+    else
+	echo ""
+    fi    
+}
 
-#create project_name.asd
+dep1=$(dependencies_on_package_file "${project_files[@]}")
+dep2=$(dependencies_for_api "${project_files[@]}")
+appendix_for_executables=$(make_asdf_appendix_for_executable $make_executable)
+
 echo -ne '(asdf:defsystem "'$project_name'"
   :description ""
   :author ""
   :licence ""
   :version ""
-  :components ((:file "packages")'"$dep1"'(:file "api" :depends-on ("packages" '"$dep2"'))))'$'\n' > $project_name.asd
+  :components ((:file "packages")'"$dep1"'(:file "api" :depends-on ("packages" '"$dep2"')))'$appendix_for_executables')'$'\n' > $project_name.asd
 
 echo ' ' >> $project_name.asd
 
@@ -104,23 +119,3 @@ echo -ne '(asdf:defsystem "'$project_name'/i-test"
   :depends-on ('\"$project_name\"')
   :components ((:file "packages")
 	       (:file "tests/integration-tests")))\n' >> $project_name.asd
-
-## bins:
-
-# (asdf:defsystem "daq-server"
-#   :description "start/stop DAQ"
-#   :author "Dr.-Ing. Igor Sokolov"
-#   :licence "BSD"
-#   :version "1.0.0"
-#   :components ((:file "packages")
-# 	       (:file "logging")
-# 	       (:file "cli")
-# 	       (:file "main" :depends-on ("packages" "logging" "cli")))
-#   :depends-on (:unix-opts :cffi :pzmq :cl-ppcre)
-#   :build-operation "program-op"
-#   :build-pathname "daq-server"
-#   :entry-point "daq-server.main:run")
-
-#echo $make_executable
-#echo $project_name
-#echo $project_files
