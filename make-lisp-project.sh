@@ -9,6 +9,7 @@ function print_help()
     echo "example ..."
 }
 
+########## parse cli args ############
 
 # get user argument: make-lisp-project [-bin|-lib] -n project-name file1 file2
 while getopts ":hbln::" opt; do
@@ -38,6 +39,8 @@ mkdir $project_name
 cd $project_name
 mkdir tests libs
 
+######## create README #############
+
 # create README.md
 echo "## Introduction
 ## How it works
@@ -50,7 +53,7 @@ echo "## Introduction
 ## References" > README.md
 
 
-######## #create project_name.asd ###########
+######## create project_name.asd ###########
 
 function dependencies_on_package_file()
 {
