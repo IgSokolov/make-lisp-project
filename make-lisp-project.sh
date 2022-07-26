@@ -52,19 +52,18 @@ echo "## Introduction
 function depend_on_package_file()
 {
     local list=""
-    local prefix=$"\n\\t\t\b"
-    local postfix=""
+    local tab=$"\n\t\t\b"
     for filename in "$@"
     do
         :
-	list+=$prefix'(:file '\"$filename\"' :depends-on ("packages"))'
+	list+=$tab'(:file '\"$filename\"' :depends-on ("packages"))'
     done
-    echo $list
+    echo $list$tab
 }
 
 function dependencies_for_api()
 {
-    list=
+    list=""
     for filename in "$@"
     do
         :
@@ -75,7 +74,6 @@ function dependencies_for_api()
 
 dep1=$(depend_on_package_file "${project_files[@]}")
 dep2=$(dependencies_for_api "${project_files[@]}")
-#echo -e $result
 
 #create project_name.asd
 echo -ne '(asdf:defsystem "'$project_name'"
@@ -83,18 +81,29 @@ echo -ne '(asdf:defsystem "'$project_name'"
   :author ""
   :licence ""
   :version ""
-  :components ((:file "packages")'"$dep1"$"\n\\t\t\b"'(:file "api" :depends-on ("packages" '"$dep2"'))))'$'\n' > $project_name.asd
+  :components ((:file "packages")'"$dep1"'(:file "api" :depends-on ("packages" '"$dep2"'))))'$'\n' > $project_name.asd
 
+echo ' ' >> $project_name.asd
 
+echo -ne '(asdf:defsystem "'$project_name'/u-test"
+  :description "Unit tests for '$project_name'
+  :author ""
+  :licence ""
+  :version ""
+  :depends-on ('\"$project_name\"')
+  :components ((:file "packages")
+	       (:file "tests/unit-tests")))\n' >> $project_name.asd
 
-# (asdf:defsystem "cl-replica/test"
-#   :description "Unit-tests for cl-replica"
-#   :author ""
-#   :licence ""
-#   :version ""
-#   :depends-on ("cl-replica")
-#   :components ((:file "packages")
-# 	       (:file "unit-tests")))  
+echo ' ' >> $project_name.asd
+
+echo -ne '(asdf:defsystem "'$project_name'/i-test"
+  :description "Integration tests for '$project_name'
+  :author ""
+  :licence ""
+  :version ""
+  :depends-on ('\"$project_name\"')
+  :components ((:file "packages")
+	       (:file "tests/integration-tests")))\n' >> $project_name.asd
 
 ## bins:
 
