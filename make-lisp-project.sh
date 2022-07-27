@@ -103,22 +103,41 @@ echo -ne '(asdf:defsystem "'$project_name'"
 
 echo ' ' >> $project_name.asd
 
-echo -ne '(asdf:defsystem "'$project_name'/u-test"
+echo '(asdf:defsystem "'$project_name'/u-test"
   :description "Unit tests for '$project_name'
   :author ""
   :licence ""
   :version ""
   :depends-on ('\"$project_name\"')
   :components ((:file "packages")
-	       (:file "tests/unit-tests")))\n' >> $project_name.asd
+	       (:file "tests/unit-tests")))' >> $project_name.asd
 
 echo ' ' >> $project_name.asd
 
-echo -ne '(asdf:defsystem "'$project_name'/i-test"
+echo '(asdf:defsystem "'$project_name'/i-test"
   :description "Integration tests for '$project_name'
   :author ""
   :licence ""
   :version ""
   :depends-on ('\"$project_name\"')
   :components ((:file "packages")
-	       (:file "tests/integration-tests")))\n' >> $project_name.asd
+	       (:file "tests/integration-tests")))' >> $project_name.asd
+
+######### create load file #########
+
+function make_load_appendix_for_executable()
+{    
+    if $1; then
+	echo "\n(asdf:make \"$project_name\")"
+    else
+	echo ""
+    fi    
+}
+
+appendix_for_executables=$(make_load_appendix_for_executable $make_executable)
+
+echo -ne '(require "asdf")
+(asdf:load-system "'$project_name'")'$appendix_for_executables'
+;;(asdf:load-system "'$project_name'/u-test") ;; to build unit-tests
+;;(asdf:load-system "'$project_name'/i-test") ;; to build integrations-tests\n' > load.lisp
+
