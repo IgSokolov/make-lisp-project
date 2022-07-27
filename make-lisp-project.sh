@@ -99,6 +99,14 @@ function main_else_api()
     fi    
 }
 
+function add_cli_for_executable()
+{
+    if $1; then
+	project_files+=("cli")
+    fi    
+}
+
+add_cli_for_executable $make_executable
 dep1=$(dependencies_on_package_file "${project_files[@]}")
 dep2=$(dependencies_for_api_or_main "${project_files[@]}")
 appendix_for_executables=$(make_asdf_appendix_for_executable $make_executable)
@@ -151,4 +159,6 @@ echo -ne '(require "asdf")
 ;;(asdf:load-system "'$project_name'/u-test") ;; to build unit-tests
 ;;(asdf:load-system "'$project_name'/i-test") ;; to build integrations-tests\n' > load.lisp
 
-########### 
+######### package file ###############
+
+
