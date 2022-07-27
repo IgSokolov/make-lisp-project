@@ -67,7 +67,7 @@ function dependencies_on_package_file()
     echo $list$tab
 }
 
-function dependencies_for_api()
+function dependencies_for_api_or_main()
 {
     list=""
     for filename in "$@"
@@ -90,16 +90,26 @@ $newline:entry-point \"$project_name.main:run\")"
     fi    
 }
 
+function main_else_api()
+{
+    if $1; then
+	echo "main"
+    else
+	echo "api"
+    fi    
+}
+
 dep1=$(dependencies_on_package_file "${project_files[@]}")
-dep2=$(dependencies_for_api "${project_files[@]}")
+dep2=$(dependencies_for_api_or_main "${project_files[@]}")
 appendix_for_executables=$(make_asdf_appendix_for_executable $make_executable)
+entry_point=$(main_else_api $make_executable)
 
 echo -ne '(asdf:defsystem "'$project_name'"
   :description ""
   :author ""
   :licence ""
   :version ""
-  :components ((:file "packages")'"$dep1"'(:file "api" :depends-on ("packages" '"$dep2"')))'$appendix_for_executables')'$'\n' > $project_name.asd
+  :components ((:file "packages")'"$dep1"'(:file '\"$entry_point\"' :depends-on ("packages" '"$dep2"')))'$appendix_for_executables')'$'\n' > $project_name.asd
 
 echo ' ' >> $project_name.asd
 
@@ -141,3 +151,4 @@ echo -ne '(require "asdf")
 ;;(asdf:load-system "'$project_name'/u-test") ;; to build unit-tests
 ;;(asdf:load-system "'$project_name'/i-test") ;; to build integrations-tests\n' > load.lisp
 
+########### 
