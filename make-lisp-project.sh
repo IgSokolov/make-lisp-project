@@ -221,13 +221,15 @@ function make_defpackage()
     fi
 }
 
-for filename in "${project_files[@]}"
+
+for filename in "${project_files[@]::${#project_files[@]}-1}"
 do    
     make_defpackage $filename "$(make_use_clause)"
 done
 
 if $make_executable; then
-    make_defpackage main "$(make_use_clause "${project_files[@]}")" "$(make_export_clause "run")"
+    make_defpackage cli "$(make_use_clause "${project_files[@]::${#project_files[@]}-1}")" "$(make_export_clause "parse-cli-args")"
+    make_defpackage main "$(make_use_clause "${project_files[@]}")" "$(make_export_clause "run")"    
 else
     make_defpackage api "$(make_use_clause "${project_files[@]}")"
 fi
