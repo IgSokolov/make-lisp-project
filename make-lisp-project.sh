@@ -113,19 +113,16 @@ appendix_for_executables=$(make_asdf_appendix_for_executable $make_executable)
 entry_point=$(main_else_api $make_executable)
 
 echo -ne '(asdf:defsystem "'$project_name'"
-  :description ""
-  :author ""
-  :licence ""
-  :version ""
+  :description "tbd"
+  :author "tbd"
+  :licence "BSD"
+  :version "1.0.0"
   :components ((:file "packages")'"$dep1"'(:file '\"$entry_point\"' :depends-on ("packages" '"$dep2"')))'$appendix_for_executables$'\n' > $project_name.asd
 
 echo ' ' >> $project_name.asd
 
 echo '(asdf:defsystem "'$project_name'/u-test"
-  :description "Unit tests for '$project_name'"
-  :author ""
-  :licence ""
-  :version ""
+  :description "Unit tests for '$project_name'"  
   :depends-on ('\"$project_name\"')
   :components ((:file "packages")
 	       (:file "tests/unit-tests")))' >> $project_name.asd
@@ -133,10 +130,7 @@ echo '(asdf:defsystem "'$project_name'/u-test"
 echo ' ' >> $project_name.asd
 
 echo '(asdf:defsystem "'$project_name'/i-test"
-  :description "Integration tests for '$project_name'"
-  :author ""
-  :licence ""
-  :version ""
+  :description "Integration tests for '$project_name'"  
   :depends-on ('\"$project_name\"')
   :components ((:file "packages")
 	       (:file "tests/integration-tests")))' >> $project_name.asd
