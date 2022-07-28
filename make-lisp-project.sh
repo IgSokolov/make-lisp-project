@@ -37,7 +37,7 @@ project_files=("${@:4}")
 rm -r $project_name # rm after degug
 mkdir $project_name
 cd $project_name
-mkdir tests libs
+mkdir tests
 
 ######## create README #############
 
@@ -64,7 +64,7 @@ function dependencies_on_package_file()
         :
 	list+=$tab'(:file '\"$filename\"' :depends-on ("packages"))'
     done
-    echo $list$tab
+    echo -ne $list$tab
 }
 
 function dependencies_for_api_or_main()
@@ -122,7 +122,7 @@ echo -ne '(asdf:defsystem "'$project_name'"
 echo ' ' >> $project_name.asd
 
 echo '(asdf:defsystem "'$project_name'/u-test"
-  :description "Unit tests for '$project_name'
+  :description "Unit tests for '$project_name'"
   :author ""
   :licence ""
   :version ""
@@ -133,7 +133,7 @@ echo '(asdf:defsystem "'$project_name'/u-test"
 echo ' ' >> $project_name.asd
 
 echo '(asdf:defsystem "'$project_name'/i-test"
-  :description "Integration tests for '$project_name'
+  :description "Integration tests for '$project_name'"
   :author ""
   :licence ""
   :version ""
@@ -241,7 +241,13 @@ function make_defpackage()
 }
 
 
-for filename in "${project_files[@]::${#project_files[@]}-1}" # all but cli.lisp
+if $make_executable; then
+    defpackage_list=("${project_files[@]::${#project_files[@]}-1}")  # all but cli.lisp
+else
+    defpackage_list=("${project_files[@]}")
+fi
+
+for filename in "${defpackage_list[@]}"
 do    
     make_defpackage $filename "$(make_use_clause)"
 done
