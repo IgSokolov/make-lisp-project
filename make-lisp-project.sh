@@ -58,7 +58,7 @@ echo "## Introduction
 function dependencies_on_package_file()
 {
     local list=""
-    local tab=$"\n\t\t\b"
+    local tab=$"\n\t"
     for filename in "$@"
     do
         :
@@ -80,13 +80,13 @@ function dependencies_for_api_or_main()
 
 function make_asdf_appendix_for_executable()
 {
-    newline="\n\t\b\b\b\b\b\b"
+    newline="\n\t"
     if $1; then
 	echo "$newline:build-operation \"program-op\"
 $newline:build-pathname \"$project_name\"
 $newline:entry-point \"$project_name.main:run\")"
     else
-	echo ""
+	echo ")"
     fi    
 }
 
@@ -117,7 +117,7 @@ echo -ne '(asdf:defsystem "'$project_name'"
   :author ""
   :licence ""
   :version ""
-  :components ((:file "packages")'"$dep1"'(:file '\"$entry_point\"' :depends-on ("packages" '"$dep2"')))'$appendix_for_executables')'$'\n' > $project_name.asd
+  :components ((:file "packages")'"$dep1"'(:file '\"$entry_point\"' :depends-on ("packages" '"$dep2"')))'$appendix_for_executables$'\n' > $project_name.asd
 
 echo ' ' >> $project_name.asd
 
@@ -155,6 +155,7 @@ function make_load_appendix_for_executable()
 appendix_for_executables=$(make_load_appendix_for_executable $make_executable)
 
 echo -ne '(require "asdf")
+(push #P"'$(pwd)'/" asdf:*central-registry*)
 (asdf:load-system "'$project_name'")'$appendix_for_executables'
 ;;(asdf:load-system "'$project_name'/u-test") ;; to build unit-tests
 ;;(asdf:load-system "'$project_name'/i-test") ;; to build integrations-tests\n' > load.lisp
@@ -230,7 +231,7 @@ function make_export_clause()
 touch packages.lisp
 function make_defpackage()
 {
-    local newline="\n\t\b\b\b\b\b\b"
+    local newline="\n\t"
     echo -ne $defpackage_prefix"$1"$newline >> packages.lisp
     echo -ne $2 >> packages.lisp
     if [[ $3 == '' ]]; then
@@ -258,3 +259,12 @@ if $make_executable; then
 else
     make_defpackage api "$(make_use_clause "${project_files[@]}")"
 fi
+
+if $make_executable; then    
+    project_files+=("main")
+else
+    project_files+=("api")
+fi
+
+make_defpackage u-tests "$(make_use_clause "${project_files[@]}")"
+make_defpackage i-tests "$(make_use_clause "${project_files[@]}")"
