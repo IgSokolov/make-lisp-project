@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 make_executable=false
 make_library=false
 
@@ -11,7 +10,6 @@ function print_help()
 }
 
 ########## parse cli args ############
-
 # get user argument: make-lisp-project [-bin|-lib] -n project-name file1 file2
 while getopts ":hbln::" opt; do
     case $opt in
@@ -27,7 +25,7 @@ while getopts ":hbln::" opt; do
     esac
 done
 
-if [[ $make_executable && $make_library ]]
+if $make_executable && $make_binary
 then
     echo "Provide either -l (for library) or -b (for binary)"
     exit 1
@@ -61,7 +59,6 @@ echo "## Introduction
 
 
 ######## create project_name.asd ###########
-
 function dependencies_on_package_file()
 {
     local list=""
@@ -143,7 +140,6 @@ echo '(asdf:defsystem "'$project_name'/i-test"
 	       (:file "tests/integration-tests")))' >> $project_name.asd
 
 ######### create load file #########
-
 function make_load_appendix_for_executable()
 {    
     if $1; then
