@@ -6,7 +6,8 @@ make_library=false
 
 function print_help()
 {
-    echo "example ..."
+    echo "To create library: ./make-lisp-project.sh -l -n test-project file1 file2"
+    echo "To create binary:  ./make-lisp-project.sh -b -n test-project file1 file2"
 }
 
 ########## parse cli args ############
@@ -19,12 +20,18 @@ while getopts ":hbln::" opt; do
 	   ;;
 	b) make_executable=true
 	   ;;
-	l) make_library=1
+	l) make_library=true
 	   ;;
 	n) project_name="$OPTARG"
 	   ;;    
     esac
 done
+
+if [[ $make_executable && $make_library ]]
+then
+    echo "Provide either -l (for library) or -b (for binary)"
+    exit 1
+fi
 
 project_files=("${@:4}")
 
