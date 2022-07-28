@@ -146,7 +146,7 @@ echo '(asdf:defsystem "'$project_name'/i-test"
 function make_load_appendix_for_executable()
 {    
     if $1; then
-	echo "\n(asdf:make \"$project_name\")"
+	echo "\n;;(asdf:make \"$project_name\") ;; to make executable"
     else
 	echo ""
     fi    
@@ -159,6 +159,74 @@ echo -ne '(require "asdf")
 ;;(asdf:load-system "'$project_name'/u-test") ;; to build unit-tests
 ;;(asdf:load-system "'$project_name'/i-test") ;; to build integrations-tests\n' > load.lisp
 
+
+######### create src files ############
+inpackage_prefix="(in-package :"$project_name"."
+function make_src_file()
+{
+    echo $inpackage_prefix$1")" > $1.lisp
+}
+
+if $make_executable; then
+    make_src_file main
+else
+    make_src_file api
+fi
+
+for filename in "${project_files[@]}"
+do    
+    make_src_file $filename
+done
+
+cd tests
+make_src_file unit-tests
+make_src_file integration-tests
+cd ..
+
 ######### package file ###############
+defpackage_prefix="(defpackage :"$project_name"."
+
+function make_use_clause()
+{
+    local list="(:use :cl"
+    for filename in "$@"
+    do
+        :
+	list+=" :"$filename
+    done
+    echo $list")"
+}
+
+function make_export_clause()
+{
+    local list="(:export"
+    for filename in "$@"
+    do
+        :
+	list+=" :"$filename
+    done
+    echo $list"))"
+}
 
 
+
+echo $defpackage_prefix"cli.lisp" > packages.lisp
+echo $(make_use_clause) >> packages.lisp
+echo $(make_export_clause) >> packages.lisp
+
+
+
+# function make_export_string()
+# {
+ 
+# }
+
+# function make_defpackage()
+# {
+#     echo $defpackage_prefix$1 > $4.lisp 
+#     make_use_clause $2 >> $4.lisp
+#     make_export_clause $3 >> $4.lisp
+# }
+
+
+# make_defpackage cli ""
