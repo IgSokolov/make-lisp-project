@@ -164,7 +164,7 @@ echo -ne '(require "asdf")
 inpackage_prefix="(in-package :"$project_name"."
 function make_src_file()
 {
-    echo $inpackage_prefix$1")" > $1.lisp
+    echo -ne $inpackage_prefix$1")\n\n" > $1.lisp
 }
 
 if $make_executable; then
@@ -177,6 +177,25 @@ for filename in "${project_files[@]}"
 do    
     make_src_file $filename
 done
+
+
+if $make_executable; then
+# fill cli.lisp
+echo "(defun parse-cli-args ()
+  (values 1 2))" >> cli.lisp
+
+# fill main.lisp
+echo ";; Entry point of the program
+(defun run()
+  (handler-case
+      (multiple-value-bind (arg) (parse-cli-args) ;; <- parse cli ang go
+	(format t \"arg = ~a~%\" arg))
+    ;; catch sigint
+    (sb-sys:interactive-interrupt () (sb-ext:exit))))" >> main.lisp
+# create & fill makefile
+echo "build:
+	sbcl --load \"load.lisp\"" > makefile
+fi
 
 cd tests
 make_src_file unit-tests
@@ -222,7 +241,7 @@ function make_defpackage()
 }
 
 
-for filename in "${project_files[@]::${#project_files[@]}-1}"
+for filename in "${project_files[@]::${#project_files[@]}-1}" # all but cli.lisp
 do    
     make_defpackage $filename "$(make_use_clause)"
 done
