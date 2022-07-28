@@ -192,7 +192,7 @@ function make_use_clause()
     for filename in "$@"
     do
         :
-	list+=" :"$filename
+	list+=" :$project_name."$filename
     done
     echo $list")"
 }
@@ -208,25 +208,26 @@ function make_export_clause()
     echo $list"))"
 }
 
+touch packages.lisp
+function make_defpackage()
+{
+    local newline="\n\t\b\b\b\b\b\b"
+    echo -ne $defpackage_prefix"$1"$newline >> packages.lisp
+    echo -ne $2 >> packages.lisp
+    if [[ $3 == '' ]]; then
+	echo -ne ")\n\n" >> packages.lisp
+    else 
+	echo -ne $newline$3'\n\n' >> packages.lisp
+    fi
+}
 
+for filename in "${project_files[@]}"
+do    
+    make_defpackage $filename "$(make_use_clause)"
+done
 
-echo $defpackage_prefix"cli.lisp" > packages.lisp
-echo $(make_use_clause) >> packages.lisp
-echo $(make_export_clause) >> packages.lisp
-
-
-
-# function make_export_string()
-# {
- 
-# }
-
-# function make_defpackage()
-# {
-#     echo $defpackage_prefix$1 > $4.lisp 
-#     make_use_clause $2 >> $4.lisp
-#     make_export_clause $3 >> $4.lisp
-# }
-
-
-# make_defpackage cli ""
+if $make_executable; then
+    make_defpackage main "$(make_use_clause "${project_files[@]}")" "$(make_export_clause "run")"
+else
+    make_defpackage api "$(make_use_clause "${project_files[@]}")"
+fi
