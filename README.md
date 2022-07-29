@@ -3,9 +3,8 @@ This shell script creates a layout for a Lisp poject.
 
 ## How to use
 The script takes the following arguments:
-- -b or -l to ..
-- -n
-
+- -b or -l flags to create a layout for a Lisp library (l) or an executable (b)
+- -n [project-name]
 ### Make a library
 To create the layout for a Lisp library, whose name is "my-library" and whose API depends on
 file1.lisp and file2.lisp, execute in shell:
@@ -29,8 +28,7 @@ my-library/
 The file `load.lisp` contains ASDF command to compile the library.
 
 ### Make an executable
-To create the layout for a Lisp executable, whose name is "my-executable" and whose main.lisp depends on
-file1.lisp and file2.lisp, execute in shell:
+To create the layout to start working on an executable, whose name is "my-executable" and whose main.lisp depends on file1.lisp and file2.lisp, execute in shell:
 ```
 ./make-lisp-project.sh -b -n my-executable file1 file2
 ```
