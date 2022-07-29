@@ -33,13 +33,12 @@ fi
 
 project_files=("${@:4}")
 
-# if [ -d $project_name ]; then
-#     echo "Project directory already exists. Exit."
-#     exit 1
-# fi
+if [ -d $project_name ]; then
+    echo "Project directory already exists. Exit."
+    exit 1
+fi
 
 # create directories
-rm -r $project_name # rm after degug
 mkdir $project_name
 cd $project_name
 mkdir tests
