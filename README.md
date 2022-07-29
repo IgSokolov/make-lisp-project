@@ -3,8 +3,8 @@ This shell script creates a layout for a Lisp poject.
 
 ## How to use
 The script takes the following arguments:
-- -b or -l flags to create a layout for a Lisp library (l) or an executable (b)
-- -n [project-name]
+- -b or -l flags to create a layout for a Lisp library (-l) or an executable (-b)
+- -n [project-name] to provide a project name
 ### Make a library
 To create the layout for a Lisp library, whose name is "my-library" and whose API depends on
 file1.lisp and file2.lisp, execute in shell:
