@@ -12,7 +12,7 @@ file1.lisp and file2.lisp, execute in shell:
 ```
 ./make-lisp-project.sh -l -n my-library file1 file2
 ```
-This produces a folder `my-library` with following content:
+This produces a folder `my-library` with the following content:
 ```
 my-library/
 ├── api.lisp
@@ -34,7 +34,7 @@ file1.lisp and file2.lisp, execute in shell:
 ```
 ./make-lisp-project.sh -b -n my-executable file1 file2
 ```
-This produces a folder `my-library` with following content:
+This produces a folder `my-library` with the following content:
 ```
 my-executable/
 ├── cli.lisp
