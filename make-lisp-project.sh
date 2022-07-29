@@ -56,7 +56,6 @@ echo "## Introduction
 ## Contribution
 ## References" > README.md
 
-
 ######## create project_name.asd ###########
 function dependencies_on_package_file()
 {
