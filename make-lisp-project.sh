@@ -25,7 +25,7 @@ while getopts ":hbln::" opt; do
     esac
 done
 
-if $make_executable && $make_binary
+if $make_executable && $make_library
 then
     echo "Provide either -l (for library) or -b (for binary)"
     exit 1
